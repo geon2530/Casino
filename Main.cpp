@@ -4,6 +4,7 @@
 #include <vector>
 #include <exception>
 #include <fstream>
+#include <exception>
 
 #define CR 13;
 
@@ -29,7 +30,8 @@ struct MC {
 
 struct GameS {
 	int Round = 0;
-	int SCard = 0;
+	int SAcard[11] = { 0 };
+	int SPcard[11] = { 0 };
 };
 
 struct PlayerInformation pi;
@@ -71,6 +73,8 @@ int main(void) {
 				}
 				else
 					GameSetting(pi.Name);
+			} else {
+				continue;
 			}
 		} catch (std::exception &e) {
 			e.what();
@@ -83,6 +87,7 @@ int main(void) {
 
 void ChangeColor(int c) {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), c);
+	return;
 }
 
 void GameSetting(string Name) {
@@ -93,12 +98,15 @@ void GameSetting(string Name) {
 	std::cout << "맞다면 Y, 아니라면 N을 입력해주세요." << endl;
 
 	YoN = _getch();
-	if (YoN == 121) {
-		Rule(); Card(0); Game();
+	while (1) {
+		if (YoN == 121) {
+			Rule(); Card(0); Game();
+		}
+		if (YoN == 110)
+			return;
+		else
+			continue;
 	}
-
-	if (YoN == 110)
-		return;
 }
 void Rule() {
 	system("cls");
@@ -163,8 +171,32 @@ void Card(int i) {
 }
 
 void Game() {
-	for (int l = 0; l <= 6; l++) {
-		std::cout << "플레이어: " << c.PlayerCard[l] << endl;
-		std::cout << "AI: " << c.RandomCard[l] << endl;
+	try {
+		for (s.Round = 1; s.Round <= 10; s.Round++) {
+
+			ChangeColor(15);
+			std::cout << "\t\t" << s.Round << "번째 라운드\t\t" << endl << endl;
+			ChangeColor(7);
+
+			std::cout << "AI의 카드를 선택하세요.(1 ~ 7)" << endl << ">> ";
+			std::cin >> s.SAcard[s.Round];
+
+			if (s.SAcard[s.Round] > 7) {
+				ChangeColor(4);
+				std::cout << "Warning C8153: 입력한 수가 s.SAcard의 최대 범위를 초과합니다." << endl;
+				Sleep(1000);
+				ChangeColor(7);
+				--s.Round; system("cls"); continue;
+			} else {
+				continue;
+			}
+			system("cls");
+
+			s.SPcard[s.Round] = rand() % 7 + 1;
+		}
+	} catch (std::out_of_range &e ) {
+			e.what();
+			exit(1);
 	}
+	return;
 }
